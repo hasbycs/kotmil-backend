@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MemberController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('banner', 'BannerController@index');
+Route::get('pegawai', 'PegawaiController@index');
+Route::get('/member', [MemberController::class, 'index']);
+Route::post('/member', [MemberController::class, 'store']);
+Route::put('/member/{id}', [MemberController::class, 'update']);

@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Banner;
 use Illuminate\Http\Request;
+use App\Helpers\QueryHelper;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class BannerController extends Controller
 {
@@ -12,10 +16,31 @@ class BannerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, Response $response): Response
     {
-        //
-        return  banner::all();
+        $queryHelper = new QueryHelper($request);
+        $filter = $queryHelper->setfilter([]);
+        $distinct = null;
+        $select = [
+            "id" => "id",
+            "name" => 'name',
+            "url" => 'url',
+            "description" => 'description',
+            "create_at" => 'create_at',
+            "update_at" => 'update_at',
+            "create_by" => 'create_by'
+        ];
+        $from = '
+            FROM "banner"
+        ';
+        try {
+            return $response->withJson($queryHelper->get($select, $from, $distinct, $filter), StatusCode::HTTP_OK);
+        } catch (QueryException $e) {
+            return $response->withJson([
+                'message' => 'Caught exception: ' . end($e->errorInfo),
+                'status' => false
+            ], StatusCode::HTTP_SERVICE_UNAVAILABLE);
+        }
     }
 
     /**
